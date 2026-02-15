@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background-light: #F5F5F7;
+  --color-background-dark: #000000;
+  --color-surface-light: #FFFFFF;
+  --color-surface-dark: #1C1C1E;
+  --color-primary-light: #007AFF;
+  --color-primary-dark: #0A84FF;
+  --color-success-light: #34C759;
+  --color-success-dark: #30D158;
+  --color-warning-light: #FF9500;
+  --color-warning-dark: #FF9F0A;
+  --color-danger-light: #FF3B30;
+  --color-danger-dark: #FF453A;
+  --color-text-primary-light: #1D1D1F;
+  --color-text-primary-dark: #F5F5F7;
+  --color-text-secondary-light: #86868B;
+  --color-text-secondary-dark: #98989D;
+
+  --radius-ios: 16px;
+  --shadow-ios: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-ios-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+@layer base {
+  body {
+    @apply bg-background-light dark:bg-background-dark text-text-primary-light dark:text-text-primary-dark;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+/* ---------- Theme backgrounds (global) ---------- */
+html, body {
+  height: 100%;
+}
+
+html {
+  background: var(--app-bg, #0B0B0D);
+}
+
+body {
+  background: var(--app-bg, #0B0B0D);
+  color: var(--app-fg, rgba(255,255,255,0.9));
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* Default (dark elegant) */
+html[data-theme="dark"] {
+  --app-bg: #0B0B0D;
+  --app-fg: rgba(255,255,255,0.92);
+}
+
+/* Dark glass */
+html[data-theme="dark_glass"] {
+  --app-bg: radial-gradient(1200px 800px at 20% 10%, rgba(255,255,255,0.10), transparent 60%),
+            radial-gradient(900px 600px at 80% 70%, rgba(10,132,255,0.12), transparent 55%),
+            #0B0B0D;
+  --app-fg: rgba(255,255,255,0.92);
+}
+
+/* Dark gradient */
+html[data-theme="dark_gradient"] {
+  --app-bg: radial-gradient(1000px 700px at 30% 10%, rgba(0,122,255,0.18), transparent 60%),
+            radial-gradient(900px 600px at 70% 80%, rgba(88,86,214,0.18), transparent 55%),
+            #0B0B0D;
+  --app-fg: rgba(255,255,255,0.92);
+}
+
+/* Light (Apple clean) */
+html[data-theme="light"] {
+  --app-bg: #F5F5F7;
+  --app-fg: rgba(0,0,0,0.88);
+}
+
