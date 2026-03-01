@@ -11,7 +11,7 @@
 
 DO $$
 DECLARE
-  v_user_id UUID := 'SEU_USER_ID_AQUI'; -- !!! SUBSTITUA AQUI !!!
+  v_user_id UUID := '5eaa9690-3a79-4335-aac9-360cf7298402'; -- User UID from Supabase Dashboard
 BEGIN
 
   -- 1. Verifica se o usuário existe, se não, aborta com uma mensagem clara
