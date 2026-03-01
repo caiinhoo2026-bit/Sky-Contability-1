@@ -25,7 +25,8 @@
 
 @layer base {
   body {
-    @apply bg-background-light dark:bg-background-dark text-text-primary-light dark:text-text-primary-dark;
+    background: var(--app-bg);
+    color: var(--app-fg);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
@@ -35,19 +36,11 @@
     text-wrap: balance;
   }
 }
-/* ---------- Theme backgrounds (global) ---------- */
-html, body {
-  height: 100%;
-}
 
-html {
-  background: var(--app-bg, #0B0B0D);
-}
-
-body {
-  background: var(--app-bg, #0B0B0D);
-  color: var(--app-fg, rgba(255,255,255,0.9));
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+/* ---------- Theme Definition ---------- */
+:root {
+  --app-bg: #F5F5F7;
+  --app-fg: rgba(0,0,0,0.88);
 }
 
 /* Default (dark elegant) */
@@ -76,5 +69,16 @@ html[data-theme="dark_gradient"] {
 html[data-theme="light"] {
   --app-bg: #F5F5F7;
   --app-fg: rgba(0,0,0,0.88);
+}
+
+/* Base resets */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 

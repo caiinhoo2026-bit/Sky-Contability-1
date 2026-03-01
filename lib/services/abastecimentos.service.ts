@@ -125,7 +125,7 @@ export class AbastecimentosService {
 
         const { data, error } = await this.supabase
             .from('abastecimentos')
-            .update(abastecimento)
+            .update(abastecimento as any)
             .eq('id', id)
             .select()
             .single()

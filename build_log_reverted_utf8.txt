@@ -1,0 +1,85 @@
+﻿
+> sky-contability@0.1.0 build
+> next build
+
+Ôû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 4.6s
+  Running TypeScript ...
+node.exe : Failed to 
+compile.
+No linha:1 
+caractere:1
++ & "C:\Program Files
+\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (Failed    
+ to compile.:Stri    
+ng) [], RemoteEx    
+ception
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+
+./lib/services/abaste
+cimentos.service.ts:1
+28:21
+Type error: Argument 
+of type '{ id?: 
+string | undefined; 
+user_id?: string | 
+undefined; data?: 
+string | undefined; 
+valor_pago?: number 
+| undefined; 
+created_at?: string 
+| undefined; 
+updated_at?: string 
+| undefined; }' is 
+not assignable to 
+parameter of type 
+'never'.
+
+[0m [90m 126 
+|[39m         
+[36mconst[39m { 
+data[33m,[39m 
+error } [33m=[39m 
+[36mawait[39m [36m
+this[39m[33m.[39ms
+upabase
+ [90m 127 |[39m    
+         [33m.[39m
+[36mfrom[39m([32m'a
+bastecimentos'[39m)
+[31m[1m>[22m[39m
+[90m 128 |[39m      
+       [33m.[39mupd
+ate(abastecimento)
+ [90m     |[39m    
+                 
+[31m[1m^[22m[39m
+ [90m 129 |[39m    
+         [33m.[39me
+q([32m'id'[39m[33m
+,[39m id)
+ [90m 130 |[39m    
+         
+[33m.[39mselect()
+ [90m 131 |[39m    
+         [33m.[39ms
+ingle()[0m
+Next.js build worker 
+exited with code: 1 
+and signal: null

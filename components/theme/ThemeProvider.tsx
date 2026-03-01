@@ -30,6 +30,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Apply on <html> so it affects the whole app
     const el = document.documentElement
     el.dataset.theme = theme
+
+    // Sync with Tailwind's darkMode: 'class'
+    if (theme.startsWith('dark')) {
+      el.classList.add('dark')
+    } else {
+      el.classList.remove('dark')
+    }
   }, [theme])
 
   const setTheme = (t: AppTheme) => setThemeState(t)
