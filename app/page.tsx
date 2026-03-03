@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { TrendingUp, TrendingDown, Package, DollarSign, Fuel, Wrench, LogOut } from 'lucide-react'
 import { useAuth } from '@/lib/supabase/auth-context'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { motion, AnimatePresence, Reorder } from 'framer-motion'
@@ -109,9 +109,17 @@ export default function Dashboard() {
   })
   const [chartData, setChartData] = useState<any[]>([])
 
+  const mounted = useRef(true)
+  useEffect(() => {
+    mounted.current = true
+    return () => { mounted.current = false }
+  }, [])
+
   const loadData = async () => {
     try {
       const g = await calculosService.calcularGeral(effectiveUserId)
+      if (!mounted.current) return
+
       setMetricas({
         receita: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(g.receita_total),
         entregas: g.total_pacotes,
@@ -131,6 +139,8 @@ export default function Dashboard() {
         { name: 'Total', receita: g.receita_total, lucro: g.lucro_liquido }
       ])
     } catch (err: any) {
+      if (!mounted.current) return
+      if (err?.name === 'AbortError' || err?.message?.includes('aborted')) return
       console.error('Erro ao carregar dados:', err?.message || err)
     }
   }
@@ -247,7 +257,9 @@ export default function Dashboard() {
     if (!loading && !user && !isTestMode) {
       router.push('/login')
     } else if (user || isTestMode) {
-      loadData().then(() => setDataLoading(false))
+      loadData().then(() => {
+        if (mounted.current) setDataLoading(false)
+      })
     }
   }, [user, loading, router])
 
@@ -365,6 +377,15 @@ export default function Dashboard() {
                     Entregas mínimas para cobrir custos
                   </p>
                 </div>
+
+                {/* BOTÃO: Fechamento do Cliente (abaixo de Ponto de Equilíbrio) */}
+                <button
+                  type="button"
+                  onClick={() => router.push('/fechamento')}
+                  className="w-full mt-3 rounded-2xl border border-white/10 bg-white/10 hover:bg-white/15 text-white py-3 px-4 transition"
+                >
+                  Fechamento do Cliente
+                </button>
               </div>
             </CardContent>
           </Card>
