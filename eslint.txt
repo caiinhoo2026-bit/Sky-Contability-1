@@ -1,0 +1,151 @@
+﻿
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\app\fechamento\page.tsx
+   46:10  warning  'createClient' is defined but never used  @typescript-eslint/no-unused-vars
+   91:27  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  139:25  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\app\login\page.tsx
+   7:10  warning  'Card' is defined but never used          @typescript-eslint/no-unused-vars
+   7:16  warning  'CardContent' is defined but never used   @typescript-eslint/no-unused-vars
+   7:29  warning  'CardHeader' is defined but never used    @typescript-eslint/no-unused-vars
+   7:41  warning  'CardTitle' is defined but never used     @typescript-eslint/no-unused-vars
+  44:23  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\app\page.tsx
+   10:8   warning  'Link' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+   11:18  warning  'AnimatePresence' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   11:35  warning  'Reorder' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   79:10  warning  'ExportData' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   93:10  warning  'dataLoading' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  110:46  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-explicit-any
+  141:19  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-explicit-any
+  153:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\app\page.tsx:153:9
+  151 |     if (savedOrder) {
+  152 |       try {
+> 153 |         setCardOrder(JSON.parse(savedOrder))
+      |         ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  154 |       } catch (e) {
+  155 |         console.error('Erro ao carregar ordem dos cards')
+  156 |       }  react-hooks/set-state-in-effect
+  154:16  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  260:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\app\page.tsx:260:7
+  258 |       router.push('/login')
+  259 |     } else if (user || isTestMode) {
+> 260 |       loadData().then(() => {
+      |       ^^^^^^^^ Avoid calling setState() directly within an effect
+  261 |         if (mounted.current) setDataLoading(false)
+  262 |       })
+  263 |     }            react-hooks/set-state-in-effect
+  264:6   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\app\registros\page.tsx
+   6:29  warning  'CardHeader' is defined but never used                                                                       @typescript-eslint/no-unused-vars
+   6:41  warning  'CardTitle' is defined but never used                                                                        @typescript-eslint/no-unused-vars
+  24:38  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  26:52  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  33:25  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  57:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  68:18  warning  'err' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+  73:47  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  85:23  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\components\ExportData.tsx
+  12:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  32:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\components\RegistrosTable.tsx
+  20:38  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  22:52  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  27:25  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  45:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  56:18  warning  'err' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+  61:47  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  73:23  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\components\Xtz125Hero.tsx
+  54:47  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  92:22  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  94:35  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\components\forms\ManutencaoForm.tsx
+  43:29  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\components\forms\ManutencaoForm.tsx:43:29
+  41 |     }, [initialData, reset])
+  42 |
+> 43 |     const tipoSelecionado = watch('tipo')
+     |                             ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  44 |
+  45 |     // Atualizar vida ├║til automaticamente quando tipo mudar
+  46 |     const handleTipoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {  react-hooks/incompatible-library
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\components\theme\ThemeProvider.tsx
+  23:42  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\components\theme\ThemeProvider.tsx:23:42
+  21 |   useEffect(() => {
+  22 |     const saved = typeof window !== 'undefined' ? (localStorage.getItem(STORAGE_KEY) as AppTheme | null) : null
+> 23 |     if (saved && THEMES.includes(saved)) setThemeState(saved)
+     |                                          ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  24 |   }, [])
+  25 |
+  26 |   useEffect(() => {  react-hooks/set-state-in-effect
+  50:25  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `cycleTheme`, but the source dependencies were [theme]. Inferred different dependency than source.
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\components\theme\ThemeProvider.tsx:50:25
+  48 |   }
+  49 |
+> 50 |   const value = useMemo(() => ({ theme, setTheme, cycleTheme }), [theme])
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not preserve existing manual memoization
+  51 |
+  52 |   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  53 | }                                                                                                                                                                                                                                                                                             react-hooks/preserve-manual-memoization
+  50:66  warning  React Hook useMemo has a missing dependency: 'cycleTheme'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\lib\services\abastecimentos.service.ts
+   85:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  119:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\lib\services\entregas.service.ts
+   89:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  129:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\lib\services\manutencoes.service.ts
+   95:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  128:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\lib\supabase\middleware.ts
+  25:58  warning  'options' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Caiin\Desktop\Sky-Contability_ALL_CHANGES\middleware.ts
+  19:9  error  'response' is never reassigned. Use 'const' instead  prefer-const
+
+Ô£û 52 problems (31 errors, 21 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

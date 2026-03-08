@@ -20,6 +20,7 @@ export class AbastecimentosService {
             .from('abastecimentos')
             .select('*')
             .eq('user_id', userId)
+            .is('fechamento_id', null)
             .order('data', { ascending: false })
 
         if (error) throw error
@@ -91,7 +92,7 @@ export class AbastecimentosService {
 
         const { data, error } = await this.supabase
             .from('abastecimentos')
-            .insert(abastecimento as any)
+            .insert(abastecimento as never)
             .select()
             .single()
 
@@ -125,7 +126,7 @@ export class AbastecimentosService {
 
         const { data, error } = await this.supabase
             .from('abastecimentos')
-            .update(abastecimento as any)
+            .update(abastecimento as never)
             .eq('id', id)
             .select()
             .single()

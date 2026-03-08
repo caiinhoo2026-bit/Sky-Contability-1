@@ -43,36 +43,48 @@ function getNextClosingDate(cycle: BillingCycle, closingDay: number | null, anch
     return null
 }
 
-import { createClient } from '@/lib/supabase/client'
-import { fechamentoService, BillingCycle } from '@/lib/services/fechamento.service'
+import { fechamentoService, BillingCycle, FechamentoRealizado } from '@/lib/services/fechamento.service'
 import { useAuth } from '@/lib/supabase/auth-context'
 import { Button } from '@/components/ui/Button'
+import { calculosService } from '@/lib/services/calculos.service'
+import { ModalFecharPeriodo } from '@/components/ModalFecharPeriodo'
+import { pdfService } from '@/lib/services/pdf.service'
+import { FileDown } from 'lucide-react'
 
 export default function FechamentoPage() {
     const router = useRouter()
     const { user, loading: authLoading } = useAuth()
 
+    const [isModalOpen, setIsModalOpen] = useState(false)
     const [cycle, setCycle] = useState<BillingCycle>('monthly')
     const [closingDay, setClosingDay] = useState<number | null>(10)
     const [anchorDate, setAnchorDate] = useState<string | null>(null)
 
     const [isSaving, setIsSaving] = useState(false)
+    const [isClosing, setIsClosing] = useState(false)
     const [isLoadingData, setIsLoadingData] = useState(true)
+    const [historico, setHistorico] = useState<FechamentoRealizado[]>([])
 
     // O effectiveUserId usado no dashboard
     const effectiveUserId: string = user?.id || '00000000-0000-0000-0000-000000000000'
 
-    // Carregar dados salvos no banco de dados (usando o padrão seguro sem signal)
+    // Carregar dados salvos no banco de dados
     useEffect(() => {
         let mounted = true
 
         async function load() {
-            if (authLoading) return // espera decidir quem é o user
+            if (authLoading) return
             setIsLoadingData(true)
 
             try {
-                const regraJaSalva = await fechamentoService.getRegra(effectiveUserId)
+                const [regraJaSalva, hist] = await Promise.all([
+                    fechamentoService.getRegra(effectiveUserId),
+                    fechamentoService.getHistorico(effectiveUserId)
+                ])
+
                 if (!mounted) return
+
+                setHistorico(hist)
 
                 if (regraJaSalva) {
                     setCycle(regraJaSalva.ciclo)
@@ -81,7 +93,6 @@ export default function FechamentoPage() {
                         setAnchorDate(regraJaSalva.data_ancora)
                     }
                 } else {
-                    // Valores padrão já estão nos states iniciais
                     const today = new Date()
                     const yyyy = today.getFullYear()
                     const mm = String(today.getMonth() + 1).padStart(2, '0')
@@ -89,11 +100,9 @@ export default function FechamentoPage() {
                     setAnchorDate(`${yyyy}-${mm}-${dd}`)
                 }
             } catch (err: any) {
-                console.error('Erro ao carregar regra de fechamento:', err.message || err)
+                console.error('Erro ao carregar dados:', err.message || err)
             } finally {
-                if (mounted) {
-                    setIsLoadingData(false)
-                }
+                if (mounted) setIsLoadingData(false)
             }
         }
 
@@ -101,17 +110,16 @@ export default function FechamentoPage() {
         return () => { mounted = false }
     }, [effectiveUserId, authLoading])
 
-    // Ajustes automáticos quando troca o tipo NA INTERFACE (apenas se não estiver carregando a primeira vez)
+    // Ajustes automáticos quando troca o tipo NA INTERFACE
     useEffect(() => {
         if (isLoadingData) return
 
         if (cycle === 'weekly' && closingDay === null) {
-            setClosingDay(5) // sexta por padrão
+            setClosingDay(5)
             setAnchorDate(null)
         }
         if (cycle === 'biweekly' && !anchorDate) {
             setClosingDay(null)
-            // data base padrão: hoje
             const today = new Date()
             const yyyy = today.getFullYear()
             const mm = String(today.getMonth() + 1).padStart(2, '0')
@@ -144,6 +152,18 @@ export default function FechamentoPage() {
         }
     }
 
+    const handleFecharPeriodo = async () => {
+        setIsModalOpen(true)
+    }
+
+    const handleExportPDF = async (fechamentoId: string, periodo: string) => {
+        try {
+            await pdfService.exportElementToPDF(`fechamento-${fechamentoId}`, `fechamento-${periodo.replace(/ /g, '_')}.pdf`)
+        } catch (error) {
+            alert('Erro ao exportar PDF. Tente novamente.')
+        }
+    }
+
     if (isLoadingData) {
         return (
             <div className="min-h-screen flex items-center justify-center text-white">
@@ -153,7 +173,7 @@ export default function FechamentoPage() {
     }
 
     return (
-        <div className="min-h-screen px-6 py-10 text-white">
+        <div className="min-h-screen px-6 py-10 text-white pb-20">
             <div className="mx-auto max-w-3xl">
                 {/* Header */}
                 <div className="flex items-center justify-between gap-4 mb-8">
@@ -163,6 +183,12 @@ export default function FechamentoPage() {
                     </div>
 
                     <button
+                        onClick={() => router.push('/historico')}
+                        className="rounded-2xl border border-blue-500/20 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 px-4 py-2 text-sm font-bold transition flex items-center gap-2"
+                    >
+                        Ver Histórico
+                    </button>
+                    <button
                         onClick={() => router.back()}
                         className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2 text-sm transition"
                     >
@@ -170,8 +196,8 @@ export default function FechamentoPage() {
                     </button>
                 </div>
 
-                {/* Card */}
-                <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
+                {/* Card Regras */}
+                <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] mb-8">
                     <div className="grid gap-5">
                         {/* Tipo */}
                         <div>
@@ -243,7 +269,7 @@ export default function FechamentoPage() {
 
                         {/* Preview */}
                         <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                            <p className="text-sm text-white/70">Próximo fechamento:</p>
+                            <p className="text-sm text-white/70">Próximo fechamento previsto:</p>
                             <p className="text-lg font-semibold mt-1">{nextClosingLabel}</p>
                         </div>
 
@@ -260,15 +286,60 @@ export default function FechamentoPage() {
 
                             <button
                                 type="button"
-                                onClick={() => alert('Em desenvolvimento: O fechamento irá consolidar os pacotes nesta data calculada.')}
-                                className="flex-1 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 py-3 px-4 transition"
+                                onClick={() => setIsModalOpen(true)}
+                                className="flex-1 rounded-2xl border border-primary/30 bg-primary/10 hover:bg-primary/20 text-blue-400 font-semibold py-3 px-4 transition"
                             >
-                                Fechar período
+                                Fechar período agora
                             </button>
                         </div>
                     </div>
                 </div>
+
+                {/* Histórico */}
+                <div className="mt-12">
+                    <h2 className="text-xl font-semibold mb-4">Histórico de Fechamentos</h2>
+                    {historico.length === 0 ? (
+                        <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
+                            <p className="text-white/50">Nenhum fechamento realizado ainda.</p>
+                        </div>
+                    ) : (
+                        <div className="grid gap-3">
+                            {historico.map((h) => (
+                                <div
+                                    key={h.id}
+                                    id={`fechamento-${h.id}`}
+                                    className="rounded-2xl border border-white/10 bg-white/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                                >
+                                    <div>
+                                        <p className="font-medium">Período: {new Date(h.data_inicio).toLocaleDateString('pt-BR')} a {new Date(h.data_fim).toLocaleDateString('pt-BR')}</p>
+                                        <div className="flex gap-4 mt-1 text-xs text-white/50">
+                                            <span>{h.total_entregas} entregas</span>
+                                            <span>Ticket Médio: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(h.ticket_medio || 0)}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="text-right">
+                                            <p className="text-success-light dark:text-success-dark font-bold text-lg">
+                                                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(h.lucro_liquido)}
+                                            </p>
+                                            <p className="text-[10px] text-white/30">{new Date(h.created_at).toLocaleString('pt-BR')}</p>
+                                        </div>
+                                        <button
+                                            onClick={() => handleExportPDF(h.id, `${new Date(h.data_inicio).toLocaleDateString('pt-BR')}-a-${new Date(h.data_fim).toLocaleDateString('pt-BR')}`)}
+                                            title="Exportar PDF"
+                                            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                                        >
+                                            <FileDown size={20} />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
+
+            {isModalOpen && <ModalFecharPeriodo onClose={() => setIsModalOpen(false)} />}
         </div>
     )
 }

@@ -2,9 +2,6 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
@@ -23,29 +20,24 @@ export default function LoginPage() {
 
         try {
             if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-                throw new Error('Configuração do Supabase (URL/Key) não encontrada no .env.local')
+                throw new Error('Configuração do Supabase não encontrada')
             }
 
             if (isSignUp) {
                 const { error } = await supabase.auth.signUp({
                     email,
                     password,
-                    options: {
-                        
-                    }
                 })
                 if (error) throw error
-                alert('Verifique seu e-mail para confirmar o cadastro! (Ou tente entrar se já confirmou)')
+                alert('Verifique seu e-mail para confirmar o cadastro!')
             } else {
                 const { error } = await supabase.auth.signInWithPassword({ email, password })
                 if (error) throw error
                 router.push('/')
             }
         } catch (err: any) {
-            console.error('Erro de autenticação:', err)
-            setError(err.message === 'Failed to fetch'
-                ? 'Erro de conexão: Não foi possível alcançar o servidor do Supabase. Verifique sua internet ou as chaves no .env.local.'
-                : err.message)
+            console.error('Erro:', err)
+            setError(err.message)
         } finally {
             setLoading(false)
         }
@@ -59,91 +51,88 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden p-4">
-            {/* Background Image with Overlay */}
-            <div
-                className="absolute inset-0 bg-contain bg-center bg-no-repeat bg-black -z-20 transition-all duration-1000"
-                style={{ backgroundImage: 'url("/logo_login.png")' }}
+        <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
+            {/* IMAGEM BACKGROUND GRANDE */}
+            <img
+                src="/sky-contability.png"
+                alt="Sky Contability"
+                className="absolute left-1/2 top-1/2 
+                           -translate-x-1/2 -translate-y-1/2 
+                           w-[1200px] max-w-none 
+                           object-contain pointer-events-none opacity-50"
             />
-            <div className="absolute inset-0 bg-black/45 -z-10" />
 
-            {/* Background Decorative Gradient */}
-            <div className="absolute inset-0 overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary-light/10 dark:bg-primary-dark/5 rounded-full blur-[100px]" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-500/10 dark:bg-blue-900/5 rounded-full blur-[100px]" />
-            </div>
+            {/* LOGIN */}
+            <div className="relative z-10 w-full max-w-[420px] bg-zinc-900/95 p-8 sm:p-10 rounded-2xl shadow-2xl border border-white/5 mx-4">
+                <form onSubmit={handleAuth}>
+                    <h1 className="text-3xl text-white font-bold text-center">
+                        {isSignUp ? 'Criar Conta' : 'Acesse sua conta'}
+                    </h1>
 
-            <div className="w-full max-w-md shadow-[0_20px_60px_rgba(0,0,0,0.4)] rounded-[2rem] overflow-hidden bg-white dark:bg-[#121212] border border-white/20 dark:border-white/5 animate-in fade-in zoom-in-95 duration-500">
-                {/* Formulário de Login Centralizado */}
-                <div className="p-8 sm:p-10 flex flex-col justify-center">
-                    <div className="mb-8 text-center">
-                        <h1 className="text-3xl font-black text-[#111] dark:text-white mb-2 tracking-tight">
-                            {isSignUp ? 'Criar Conta' : 'Acesse sua conta'}
-                        </h1>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-                            {isSignUp ? 'Junte-se ao Sky Contability' : 'Bem-vindo de volta!'}
-                        </p>
+                    <p className="text-gray-400 text-center mb-6">
+                        {isSignUp ? 'Junte-se ao Sky Contability' : 'Bem-vindo de volta!'}
+                    </p>
+
+                    {error && (
+                        <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                            <p className="text-red-500 text-sm text-center">{error}</p>
+                        </div>
+                    )}
+
+                    <div className="space-y-4">
+                        <div>
+                            <label className="text-white text-sm">E-mail</label>
+                            <input
+                                type="email"
+                                placeholder="seu@email.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                className="w-full p-3 mb-4 mt-1 bg-zinc-800 rounded-lg text-white border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-white text-sm">Senha</label>
+                            <input
+                                type="password"
+                                placeholder="Senha"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                className="w-full p-3 mb-6 mt-1 bg-zinc-800 rounded-lg text-white border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
+                            />
+                        </div>
                     </div>
 
-                    <form onSubmit={handleAuth} className="space-y-4">
-                        <Input
-                            label="E-mail"
-                            type="email"
-                            placeholder="seu@email.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            className="h-12 rounded-xl bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10"
-                        />
-                        <Input
-                            label="Senha"
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            className="h-12 rounded-xl bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10"
-                        />
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-lg text-white font-bold transition-all disabled:opacity-50"
+                    >
+                        {loading ? 'Carregando...' : isSignUp ? 'Registrar' : 'Entrar'}
+                    </button>
 
-                        {error && (
-                            <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20">
-                                <p className="text-red-500 text-xs font-bold text-center">{error}</p>
-                            </div>
-                        )}
+                    <div className="text-center text-gray-500 mt-6 text-sm">
+                        ou continue com
+                    </div>
 
-                        <div className="pt-2">
-                            <Button type="submit" className="w-full h-12 text-base font-bold rounded-xl bg-primary-light hover:bg-primary-light/90 text-white shadow-lg shadow-primary-light/20 transition-all font-sans" disabled={loading}>
-                                {loading ? 'Carregando...' : isSignUp ? 'Registrar' : 'Entrar'}
-                            </Button>
-                        </div>
+                    <button
+                        type="button"
+                        onClick={handleModoTeste}
+                        className="w-full mt-4 border border-gray-600 p-3 rounded-lg text-white hover:bg-zinc-800 transition-all font-medium"
+                    >
+                        Modo Teste (Offline)
+                    </button>
 
-                        <div className="relative my-6">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-gray-100 dark:border-white/5" />
-                            </div>
-                            <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
-                                <span className="bg-white dark:bg-[#121212] px-3 text-gray-400 font-bold">ou continue com</span>
-                            </div>
-                        </div>
-
-                        <Button
-                            type="button"
-                            variant="outline"
-                            className="w-full h-12 border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition-all font-bold text-sm rounded-xl"
-                            onClick={handleModoTeste}
-                        >
-                            Modo Teste (Offline)
-                        </Button>
-
-                        <button
-                            type="button"
-                            onClick={() => setIsSignUp(!isSignUp)}
-                            className="text-primary-light dark:text-blue-400 text-center w-full mt-6 font-bold text-xs hover:underline transition-all"
-                        >
-                            {isSignUp ? 'Já possui conta? Acessar' : 'Acesse ou crie sua conta aqui'}
-                        </button>
-                    </form>
-                </div>
+                    <button
+                        type="button"
+                        onClick={() => setIsSignUp(!isSignUp)}
+                        className="text-center text-blue-400 mt-6 text-sm w-full hover:underline transition-all block"
+                    >
+                        {isSignUp ? 'Já possui conta? Acessar' : 'Acesse ou crie sua conta aqui'}
+                    </button>
+                </form>
             </div>
         </div>
     )

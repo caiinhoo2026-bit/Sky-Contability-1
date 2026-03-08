@@ -9,6 +9,7 @@ import { useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { motion, AnimatePresence, Reorder } from 'framer-motion'
+import Image from 'next/image'
 
 interface MetricCardProps {
   title: string
@@ -105,7 +106,12 @@ export default function Dashboard() {
     custoManutencaoDiluido: 'R$ 0,00',
     kmRodados: '0.0 km',
     custoPorKm: 'R$ 0,00',
-    pontoEquilibrio: '0 entregas'
+    pontoEquilibrio: '0 entregas',
+    resumoMes: {
+      total_ganhos: 0,
+      lucro_liquido: 0,
+      total_entregas: 0
+    }
   })
   const [chartData, setChartData] = useState<any[]>([])
 
@@ -130,7 +136,8 @@ export default function Dashboard() {
         custoManutencaoDiluido: `${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(g.total_manutencao)}`,
         kmRodados: `${g.total_km_rodado.toFixed(1)} km`,
         custoPorKm: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(g.custo_medio_km),
-        pontoEquilibrio: `${Math.ceil(g.ponto_equilibrio)} entregas`
+        pontoEquilibrio: `${Math.ceil(g.ponto_equilibrio)} entregas`,
+        resumoMes: metricas.resumoMes // Mantém o valor anterior ou o default
       })
 
       // Gerar dados para o gráfico (simulado por enquanto com dados gerais, 
@@ -138,6 +145,26 @@ export default function Dashboard() {
       setChartData([
         { name: 'Total', receita: g.receita_total, lucro: g.lucro_liquido }
       ])
+
+      // Buscar resumo do mês atual via RPC
+      const hoje = new Date()
+      const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString().split('T')[0]
+      const fimHoje = hoje.toISOString().split('T')[0]
+
+      const { data: resumoMesData, error: rpcError } = await (supabase.rpc as any)('resumo_periodo', {
+        data_inicio: inicioMes,
+        data_fim: fimHoje
+      })
+
+      console.log('Dashboard resumo_periodo data:', resumoMesData)
+      console.log('Dashboard resumo_periodo error:', rpcError)
+
+      if (resumoMesData && resumoMesData[0]) {
+        setMetricas(prev => ({
+          ...prev,
+          resumoMes: resumoMesData[0]
+        }))
+      }
     } catch (err: any) {
       if (!mounted.current) return
       if (err?.name === 'AbortError' || err?.message?.includes('aborted')) return
@@ -291,24 +318,34 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark relative overflow-hidden">
-      {/* Background Motoqueiro Watermark */}
-      <div
-        className="absolute top-0 right-[-10%] w-[60%] h-full bg-contain bg-right-top bg-no-repeat opacity-[0.03] dark:opacity-[0.05] -z-10 pointer-events-none"
-        style={{ backgroundImage: 'url("/logo.png")' }}
-      />
+
 
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 relative z-10">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-start">
+        <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-4xl font-bold text-text-primary-light dark:text-text-primary-dark mb-2">
-              Sky Contability
-            </h1>
-            <p className="text-text-secondary-light dark:text-text-secondary-dark">
+            <Link href="/" className="inline-flex items-center">
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                whileHover={{ scale: 1.03 }}
+                className="relative"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/skylogo3,0.png"
+                  alt="Sky Contability"
+                  style={{ height: '220px', width: 'auto', maxWidth: '280px', objectFit: 'contain' }}
+                  className="drop-shadow-[0_0_18px_rgba(37,99,235,0.18)]"
+                />
+              </motion.div>
+            </Link>
+          </div>
+          <div className="flex items-center gap-4">
+            <p className="text-sm text-text-secondary-light dark:text-text-secondary-dark">
               Bem-vindo, {user?.email?.split('@')[0] || 'Convidado'}
             </p>
-          </div>
-          <div className="flex gap-3">
             <button
               onClick={handleLogout}
               className="p-2 rounded-ios bg-surface-light dark:bg-surface-dark shadow-ios hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-danger-light"
@@ -318,8 +355,42 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {cardOrder.map((id, index) => renderMetricCard(id, index))}
+
+          {/* Nova Coluna / Card de Resumo do Mês */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="lg:col-span-1 rounded-[32px] border border-blue-500/20 bg-blue-500/5 p-6 backdrop-blur-sm flex flex-col justify-between"
+          >
+            <div>
+              <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Preview do Mês</p>
+              <h3 className="text-sm font-bold text-white/60 mb-4">Relatório em Tempo Real</h3>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-white/40">Ganhos</span>
+                  <span className="text-sm font-bold text-emerald-400">
+                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(metricas.resumoMes.total_ganhos)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-white/40">Entregas</span>
+                  <span className="text-sm font-bold text-white">{metricas.resumoMes.total_entregas}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-white/5">
+              <div className="flex justify-between items-end">
+                <span className="text-[10px] font-bold text-white/40 uppercase">Lucro Previsto</span>
+                <span className={`text-xl font-black ${metricas.resumoMes.lucro_liquido >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(metricas.resumoMes.lucro_liquido)}
+                </span>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* Gráfico e Ponto de Equilíbrio */}

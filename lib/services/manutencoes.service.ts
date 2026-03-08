@@ -29,6 +29,7 @@ export class ManutencoesService {
             .from('manutencoes')
             .select('*')
             .eq('user_id', userId)
+            .is('fechamento_id', null)
             .order('data', { ascending: false })
 
         if (error) throw error
@@ -101,7 +102,7 @@ export class ManutencoesService {
 
         const { data, error } = await this.supabase
             .from('manutencoes')
-            .insert(manutencao as any)
+            .insert(manutencao as never)
             .select()
             .single()
 
@@ -137,7 +138,7 @@ export class ManutencoesService {
 
         const { data, error } = await this.supabase
             .from('manutencoes')
-            .update(manutencao)
+            .update(manutencao as never)
             .eq('id', id)
             .select()
             .single()

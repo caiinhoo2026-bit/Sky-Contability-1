@@ -20,6 +20,7 @@ export class EntregasService {
             .from('entregas')
             .select('*')
             .eq('user_id', userId)
+            .is('fechamento_id', null)
             .order('data', { ascending: false })
 
         if (error) throw error
@@ -77,13 +78,16 @@ export class EntregasService {
 
         if (this.isTestUser(entrega.user_id)) {
             const localData = this.getLocalData()
+            const config = this.getLocalConfig()
+            const valorPorEntrega = config?.valor_por_entrega || 4.0
+
             const novaEntrega: Entrega = {
                 ...entrega,
                 id: Math.random().toString(36).substr(2, 9),
                 km_inicial: entrega.km_inicial || 0,
                 km_final: entrega.km_final || 0,
                 km_total: (entrega.km_final || 0) - (entrega.km_inicial || 0),
-                receita: (entrega.quantidade_pacotes || 0) * 4,
+                receita: (entrega.quantidade_pacotes || 0) * valorPorEntrega,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
             } as any
@@ -95,7 +99,7 @@ export class EntregasService {
 
         const { data, error } = await this.supabase
             .from('entregas')
-            .insert(entrega as any)
+            .insert(entrega as never)
             .select()
             .single()
 
@@ -129,8 +133,11 @@ export class EntregasService {
             } as any
 
             // Recalcular campos gerados
+            const config = this.getLocalConfig()
+            const valorPorEntrega = config?.valor_por_entrega || 4.0
+
             entregaAtualizada.km_total = (entregaAtualizada.km_final || 0) - (entregaAtualizada.km_inicial || 0)
-            entregaAtualizada.receita = (entregaAtualizada.quantidade_pacotes || 0) * 4
+            entregaAtualizada.receita = (entregaAtualizada.quantidade_pacotes || 0) * valorPorEntrega
 
             localData[index] = entregaAtualizada
             this.saveLocalData(localData)
@@ -139,7 +146,7 @@ export class EntregasService {
 
         const { data, error } = await this.supabase
             .from('entregas')
-            .update(entrega)
+            .update(entrega as never)
             .eq('id', id)
             .select()
             .single()
@@ -210,6 +217,12 @@ export class EntregasService {
         if (typeof window === 'undefined') return []
         const data = localStorage.getItem('shopee_entregas')
         return data ? (JSON.parse(data) as Entrega[]) : []
+    }
+
+    private getLocalConfig(): any {
+        if (typeof window === 'undefined') return null
+        const data = localStorage.getItem('shopee_configuracoes')
+        return data ? JSON.parse(data) : null
     }
 
     private saveLocalData(data: Entrega[]): void {

@@ -1,6 +1,7 @@
 import { entregasService } from './entregas.service'
 import { abastecimentosService } from './abastecimentos.service'
 import { manutencoesService } from './manutencoes.service'
+import { createClient } from '../supabase/client'
 
 export interface CalculoFinanceiro {
     // Dados do período
@@ -41,6 +42,7 @@ export interface CalculoFinanceiro {
 }
 
 export class CalculosService {
+    private supabase = createClient()
     /**
      * Calcular todas as métricas financeiras para um período
      */
@@ -260,6 +262,15 @@ export class CalculosService {
         const receitaTotal = entregas.reduce((acc, e) => acc + (Number(e.receita) || 0), 0)
         const totalPacotes = entregas.reduce((acc, e) => acc + (Number(e.quantidade_pacotes) || 0), 0)
 
+        // 3.1 Buscar configurações do usuário para o valor por entrega
+        const { data: config } = await (this as any).supabase
+            .from('configuracoes')
+            .select('valor_por_entrega')
+            .eq('user_id', userId)
+            .single()
+
+        const valorPorEntrega = Number(config?.valor_por_entrega || 4.0)
+
         // 4. Calcular manutenção diluída (total ao longo da vida do veículo/km rodado)
         // Para o "Geral", pegamos o KM total rodado nas entregas
         let kmInicial = 0
@@ -275,7 +286,7 @@ export class CalculosService {
         const lucroLiquido = receitaTotal - (totalCombustivel + totalManutencaoPaga)
         const margemPercentual = receitaTotal > 0 ? (lucroLiquido / receitaTotal) * 100 : 0
         const custoMedioKm = totalKmRodado > 0 ? (totalCombustivel + totalManutencao) / totalKmRodado : 0
-        const pontoEquilibrio = (totalCombustivel + totalManutencao) / 4.0
+        const pontoEquilibrio = (totalCombustivel + totalManutencao) / valorPorEntrega
 
         return {
             total_entregas: entregas.length,
