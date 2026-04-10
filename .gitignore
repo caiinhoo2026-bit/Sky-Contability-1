@@ -30,8 +30,24 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# ==========================================
+# SECRETS E ENVIRONMENTS - SEGURANÇA MÁXIMA
+# ==========================================
+# Ignorar todos os arquivos .env, exceção apenas aos genéricos (.example)
+.env
+.env.*
+!.env.example
+!.env.local.example
+
+# Arquivos de chaves, tokens e logs de credenciais
+*.pem
+*.key
+*.cert
+*.crt
+secrets.*
+credentials.json
+.supabase/
+auth.json
 
 # vercel
 .vercel

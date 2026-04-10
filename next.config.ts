@@ -1,14 +1,39 @@
 import type { NextConfig } from "next";
+import withPWAInit from "@ducanh2912/next-pwa";
+
+const withPWA = withPWAInit({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  register: true,
+  skipWaiting: true,
+});
+
+// OWASP Security Headers Recommendation
+const securityHeaders = [
+  { key: 'X-XSS-Protection', value: '1; mode=block' },
+  { key: 'X-Frame-Options', value: 'DENY' }, // Mitiga Clickjacking
+  { key: 'X-Content-Type-Options', value: 'nosniff' }, // Mitiga MIME sniffing
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { 
+    key: 'Content-Security-Policy', 
+    // Restringe drásticamente os domínios permitidos para prevenção contra XSS. (Em prod, remover unsafe inline se possível)
+    value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://bwhfjsbgzbjsrrepssdi.supabase.co;" 
+  },
+  { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' } // HSTS forçado
+];
 
 const nextConfig: NextConfig = {
-  // @ts-ignore
-  eslint: {
-    ignoreDuringBuilds: true,
+  // Security Misconfiguration Mitigation: Remove header "X-Powered-By: Next.js"
+  poweredByHeader: false, 
+  
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: securityHeaders,
+      },
+    ]
   },
-  // @ts-ignore
-  typescript: {
-    ignoreBuildErrors: true,
-  }
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);
