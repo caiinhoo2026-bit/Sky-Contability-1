@@ -1,10 +1,4 @@
 import type { NextConfig } from "next";
-import withPWAInit from "@ducanh2912/next-pwa";
-
-const withPWA = withPWAInit({
-  dest: "public",
-  disable: process.env.NODE_ENV === "development",
-});
 
 // OWASP Security Headers Recommendation
 const securityHeaders = [
@@ -21,9 +15,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  experimental: {
-    webpackBuildWorker: false,
-  },
+  turbopack: {},
   // Security Misconfiguration Mitigation: Remove header "X-Powered-By: Next.js"
   poweredByHeader: false, 
   
@@ -37,4 +29,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withPWA(nextConfig);
+export default nextConfig;
