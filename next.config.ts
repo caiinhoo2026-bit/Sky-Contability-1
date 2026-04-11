@@ -15,7 +15,6 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  turbopack: {},
   // Security Misconfiguration Mitigation: Remove header "X-Powered-By: Next.js"
   poweredByHeader: false, 
   
