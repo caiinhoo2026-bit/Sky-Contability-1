@@ -11,7 +11,6 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Controle de Entregas Shopee",
   description: "Sistema de controle financeiro para entregas Shopee",
-  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
